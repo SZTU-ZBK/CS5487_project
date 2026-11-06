@@ -1,0 +1,2 @@
+method,mean_accuracy,std_accuracy,mean_macro_f1,mean_train_seconds,mean_predict_seconds
+Scattering + SVM,0.976,0.0007071067811865089,0.9760113350677992,17.928267100000085,3.6976910499997757

@@ -1,0 +1,18 @@
+{
+  "trial": 1,
+  "J": 2,
+  "L": 8,
+  "max_order": 2,
+  "svm_implementation": "SVC (LIBSVM)",
+  "kernel": "linear",
+  "C_values": [
+    0.01,
+    0.1,
+    1.0
+  ],
+  "selected_C": 0.01,
+  "best_validation_accuracy": 0.9825,
+  "split_seed": 42,
+  "n_train": 2000,
+  "validation_fraction": 0.2
+}

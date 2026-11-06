@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": [
+    "01_1nn.ipynb: all code cells executed without errors",
+    "02_cnn.ipynb: all code cells executed without errors",
+    "03_scattering.ipynb: all code cells executed without errors",
+    "1nn trial 1: reloaded model reproduces all 2,000 predictions",
+    "1nn trial 2: reloaded model reproduces all 2,000 predictions",
+    "cnn_geometric trial 1: reloaded model reproduces all 2,000 predictions",
+    "cnn_geometric trial 2: reloaded model reproduces all 2,000 predictions",
+    "cnn_morphology trial 1: reloaded model reproduces all 2,000 predictions",
+    "cnn_morphology trial 2: reloaded model reproduces all 2,000 predictions",
+    "scattering trial 1: reloaded model reproduces all 2,000 predictions",
+    "scattering trial 2: reloaded model reproduces all 2,000 predictions",
+    "47 PNG/PDF figure pairs verified"
+  ],
+  "model_trial_count": 8,
+  "figure_pairs": 47,
+  "test_predictions_audited": 16000
+}

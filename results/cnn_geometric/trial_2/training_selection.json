@@ -1,0 +1,6 @@
+{
+  "best_epoch": 25,
+  "best_validation_loss": 0.10911180913448333,
+  "selection_seconds": 18.856750300001295,
+  "final_fit_seconds": 22.162830000001122
+}

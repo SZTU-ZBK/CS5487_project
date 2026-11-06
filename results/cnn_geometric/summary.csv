@@ -1,0 +1,2 @@
+method,mean_accuracy,std_accuracy,mean_macro_f1,mean_train_seconds,mean_predict_seconds
+CNN geometric,0.95575,0.00035355339059323483,0.955727222558054,42.83462155000052,0.26589880000028643

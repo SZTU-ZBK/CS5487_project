@@ -1,0 +1,9 @@
+{
+  "method": "1-NN",
+  "trial": 2,
+  "n_test": 2000,
+  "accuracy": 0.9185,
+  "macro_f1": 0.9179322140610333,
+  "train_seconds": 0.0036748999991687015,
+  "predict_seconds": 0.1066231999975571
+}

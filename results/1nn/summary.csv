@@ -1,0 +1,2 @@
+method,mean_accuracy,std_accuracy,mean_macro_f1,mean_train_seconds,mean_predict_seconds
+1-NN,0.9159999999999999,0.00353553390593278,0.9154816129451191,0.02299794999998994,0.13249679999898945

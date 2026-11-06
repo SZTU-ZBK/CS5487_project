@@ -1,0 +1,7 @@
+{
+  "method": "1-NN",
+  "n_neighbors": 1,
+  "metric": "euclidean",
+  "n_train": 2000,
+  "trial": 2
+}

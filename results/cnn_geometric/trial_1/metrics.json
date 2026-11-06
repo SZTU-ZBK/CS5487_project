@@ -1,0 +1,9 @@
+{
+  "method": "CNN geometric",
+  "trial": 1,
+  "n_test": 2000,
+  "accuracy": 0.956,
+  "macro_f1": 0.9560116840170265,
+  "train_seconds": 44.64966279999862,
+  "predict_seconds": 0.28962550000142073
+}

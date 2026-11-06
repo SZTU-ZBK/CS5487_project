@@ -1,0 +1,9 @@
+{
+  "method": "Scattering + SVM",
+  "trial": 1,
+  "n_test": 2000,
+  "accuracy": 0.9765,
+  "macro_f1": 0.9765257005702687,
+  "train_seconds": 17.40185189999829,
+  "predict_seconds": 3.6556211999995867
+}
