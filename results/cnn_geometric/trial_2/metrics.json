@@ -2,8 +2,8 @@
   "method": "CNN geometric",
   "trial": 2,
   "n_test": 2000,
-  "accuracy": 0.9555,
-  "macro_f1": 0.9554427610990816,
-  "train_seconds": 41.01958030000242,
-  "predict_seconds": 0.24217209999915212
+  "accuracy": 0.9605,
+  "macro_f1": 0.9604711307432028,
+  "train_seconds": 53.2937196999992,
+  "predict_seconds": 0.2537716000006185
 }

@@ -1,0 +1,2 @@
+method,mean_accuracy,std_accuracy,mean_macro_f1,mean_train_seconds,mean_predict_seconds
+CNN enhanced,0.9715,0.0007071067811865089,0.9715066107807159,136.89493699999912,0.22702269999899727

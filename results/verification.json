@@ -8,13 +8,14 @@
     "1nn trial 2: reloaded model reproduces all 2,000 predictions",
     "cnn_geometric trial 1: reloaded model reproduces all 2,000 predictions",
     "cnn_geometric trial 2: reloaded model reproduces all 2,000 predictions",
-    "cnn_morphology trial 1: reloaded model reproduces all 2,000 predictions",
-    "cnn_morphology trial 2: reloaded model reproduces all 2,000 predictions",
+    "cnn_enhanced trial 1: reloaded model reproduces all 2,000 predictions",
+    "cnn_enhanced trial 2: reloaded model reproduces all 2,000 predictions",
     "scattering trial 1: reloaded model reproduces all 2,000 predictions",
     "scattering trial 2: reloaded model reproduces all 2,000 predictions",
-    "47 PNG/PDF figure pairs verified"
+    "Exactly two final CNN groups; selected policies match their frozen configurations",
+    "49 PNG/PDF figure pairs verified"
   ],
   "model_trial_count": 8,
-  "figure_pairs": 47,
+  "figure_pairs": 49,
   "test_predictions_audited": 16000
 }

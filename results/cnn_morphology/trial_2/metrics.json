@@ -1,9 +1,0 @@
-{
-  "method": "CNN + morphology",
-  "trial": 2,
-  "n_test": 2000,
-  "accuracy": 0.958,
-  "macro_f1": 0.9580258250071678,
-  "train_seconds": 45.035890199997084,
-  "predict_seconds": 0.2374037000008684
-}

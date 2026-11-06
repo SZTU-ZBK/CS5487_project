@@ -8,11 +8,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
-from scipy.ndimage import grey_dilation, grey_erosion, rotate, shift
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from plot_utils import save_figure
+from augmentation import geometric_augmentation, additional_augmentation
 
 
 def set_seed(seed):
@@ -25,31 +25,12 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = False
 
 
-def morphology(image, operation):
-    # Bright digit on a dark background: erosion thins, dilation thickens.
-    footprint = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], dtype=bool)
-    if operation == "erosion":
-        return grey_erosion(image, footprint=footprint, mode="constant", cval=0)
-    if operation == "dilation":
-        return grey_dilation(image, footprint=footprint, mode="constant", cval=0)
-    raise ValueError("operation must be erosion or dilation")
-
-
-def geometric_augmentation(image):
-    # Linear interpolation, dark background, and no flipping of digit identity.
-    angle = random.uniform(-10, 10)
-    offset = (random.uniform(-2, 2), random.uniform(-2, 2))
-    result = rotate(image, angle, reshape=False, order=1, mode="constant", cval=0, prefilter=False)
-    return shift(result, offset, order=1, mode="constant", cval=0, prefilter=False)
-
-
 class DigitDataset(Dataset):
-    def __init__(self, images, labels, augment=False, use_morphology=False, probability=0.35):
+    def __init__(self, images, labels, augment=False, settings=None):
         self.images = images
         self.labels = labels
         self.augment = augment
-        self.use_morphology = use_morphology
-        self.probability = probability
+        self.settings = settings or {}
 
     def __len__(self):
         return len(self.labels)
@@ -57,12 +38,8 @@ class DigitDataset(Dataset):
     def __getitem__(self, index):
         image = self.images[index].copy()
         if self.augment:
-            image = geometric_augmentation(image)
-            # A separate RNG stream keeps the geometric transforms identical
-            # between the two CNN settings for the same seed and epoch.
-            if self.use_morphology and np.random.random() < self.probability:
-                operation = np.random.choice(["erosion", "dilation"])
-                image = morphology(image, operation)
+            image = geometric_augmentation(image, self.settings)
+            image = additional_augmentation(image, self.settings)
         return torch.from_numpy(image.copy()).unsqueeze(0), int(self.labels[index])
 
 
@@ -89,9 +66,8 @@ class SimpleCNN(nn.Module):
         return self.classifier(self.features(images))
 
 
-def make_loader(images, labels, config, training=False, use_morphology=False):
-    dataset = DigitDataset(images, labels, augment=training, use_morphology=use_morphology,
-                           probability=config["morphology_probability"])
+def make_loader(images, labels, config, training=False):
+    dataset = DigitDataset(images, labels, augment=training, settings=config.get("augmentation", {}))
     generator = torch.Generator().manual_seed(config["seed"])
     # num_workers=0 keeps Windows notebooks straightforward and reproducible.
     return DataLoader(dataset, batch_size=config["batch_size"], shuffle=training,
@@ -128,9 +104,9 @@ def new_model_and_optimizer(config):
     return model, optimizer
 
 
-def train_cnn(fit_images, fit_labels, val_images, val_labels, config, use_morphology, folder):
+def train_cnn(fit_images, fit_labels, val_images, val_labels, config, folder):
     model, optimizer = new_model_and_optimizer(config)
-    train_loader = make_loader(fit_images, fit_labels, config, True, use_morphology)
+    train_loader = make_loader(fit_images, fit_labels, config, True)
     val_loader = make_loader(val_images, val_labels, config)
     loss_function = nn.CrossEntropyLoss()
     best_loss = float("inf")
@@ -154,7 +130,7 @@ def train_cnn(fit_images, fit_labels, val_images, val_labels, config, use_morpho
             best_state = copy.deepcopy(model.state_dict())
             wait = 0
             torch.save({"state_dict": best_state, "config": config, "epoch": best_epoch,
-                        "use_morphology": use_morphology}, folder / "validation_checkpoint.pt")
+                        "augmentation": config.get("augmentation", {})}, folder / "validation_checkpoint.pt")
         else:
             wait += 1
         if wait >= config["patience"]:
@@ -164,11 +140,11 @@ def train_cnn(fit_images, fit_labels, val_images, val_labels, config, use_morpho
     return model, pd.DataFrame(rows), best_epoch
 
 
-def fit_full_training_set(images, labels, config, use_morphology, epochs, folder):
+def fit_full_training_set(images, labels, config, epochs, folder):
     # Reinitialize, then use ALL 2,000 training images for a validation-selected
     # number of epochs. Test images and labels never enter this function.
     model, optimizer = new_model_and_optimizer(config)
-    loader = make_loader(images, labels, config, True, use_morphology)
+    loader = make_loader(images, labels, config, True)
     loss_function = nn.CrossEntropyLoss()
     rows = []
     for epoch in range(1, epochs + 1):
@@ -176,7 +152,7 @@ def fit_full_training_set(images, labels, config, use_morphology, epochs, folder
         rows.append({"epoch": epoch, "train_loss": loss, "train_accuracy": accuracy})
         pd.DataFrame(rows).to_csv(folder / "final_training_history.csv", index=False)
     torch.save({"state_dict": model.state_dict(), "config": config, "epoch": epochs,
-                "use_morphology": use_morphology}, folder / "final_model.pt")
+                "augmentation": config.get("augmentation", {})}, folder / "final_model.pt")
     history = pd.DataFrame(rows)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
     axes[0].plot(history["epoch"], history["train_loss"])
@@ -216,19 +192,25 @@ def load_cnn_model(path, device="cpu"):
     return model, config
 
 
-def plot_augmentation(images, labels, folder, seed=42):
+def plot_augmentation(images, labels, folder, settings, seed=42, geometric_settings=None):
     set_seed(seed)
-    fig, axes = plt.subplots(10, 4, figsize=(7, 15))
-    titles = ["Original", "Geometric", "Geo + erosion", "Geo + dilation"]
+    if geometric_settings is None:
+        geometric_settings = {"rotation": 10, "translation": 2, "scale_min": 0.85,
+                              "scale_max": 1.15, "shear": 0}
+    fig, axes = plt.subplots(10, 3, figsize=(7, 15))
+    titles = ["Original", "Geometric", "Selected enhanced"]
     for digit in range(10):
         image = images[np.where(labels == digit)[0][0]]
-        transformed = geometric_augmentation(image)
-        examples = [image, transformed, morphology(transformed, "erosion"), morphology(transformed, "dilation")]
-        for col in range(4):
+        state = random.getstate()
+        transformed = geometric_augmentation(image, geometric_settings)
+        random.setstate(state)
+        selected = geometric_augmentation(image, settings)
+        examples = [image, transformed, additional_augmentation(selected, settings)]
+        for col in range(3):
             axes[digit, col].imshow(examples[col], cmap="gray", vmin=0, vmax=1)
             axes[digit, col].axis("off")
             if digit == 0:
                 axes[digit, col].set_title(titles[col])
-    fig.suptitle("Training-only augmentation preview: mild stroke-width changes")
+    fig.suptitle("Training-only examples of the selected augmentation policy")
     fig.tight_layout()
     save_figure(fig, folder, "augmentation_examples")

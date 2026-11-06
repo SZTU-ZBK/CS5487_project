@@ -2,7 +2,7 @@
 
 **CS5487 Course Project Proposal**
 
-**Group members:** [Name / Student ID], [Name / Student ID], [optional third member]
+**Group members:** 张宝坤 (72610491), 王昌浩 (72610116), 彭迪 (72610480)
 
 ## Problem and Objective
 

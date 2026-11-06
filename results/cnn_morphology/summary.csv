@@ -1,2 +1,0 @@
-method,mean_accuracy,std_accuracy,mean_macro_f1,mean_train_seconds,mean_predict_seconds
-CNN + morphology,0.9592499999999999,0.0017677669529663704,0.9592628682347298,46.74329729999954,0.25734505000036734

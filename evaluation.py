@@ -82,7 +82,7 @@ def evaluate_predictions(labels, predictions, images, folder, method, trial,
 def save_method_summary(rows, folder):
     table = pd.DataFrame(rows)
     table.to_csv(folder / "trial_results.csv", index=False)
-    summary = table.groupby("method").agg(
+    summary = table.groupby("method", sort=False).agg(
         mean_accuracy=("accuracy", "mean"),
         std_accuracy=("accuracy", "std"),
         mean_macro_f1=("macro_f1", "mean"),
@@ -95,8 +95,9 @@ def save_method_summary(rows, folder):
 
 def compare_methods():
     # Read saved results only: this function never selects or tunes a model.
-    files = sorted(path for path in RESULTS.glob("*/trial_results.csv")
-                   if path.parent.name != "comparison")
+    methods = ["1nn", "cnn_geometric", "cnn_enhanced", "scattering"]
+    files = [RESULTS / name / "trial_results.csv" for name in methods
+             if (RESULTS / name / "trial_results.csv").exists()]
     if not files:
         return pd.DataFrame()
     table = pd.concat([pd.read_csv(path) for path in files], ignore_index=True)
@@ -118,15 +119,29 @@ def compare_methods():
     save_figure(fig, folder, "accuracy_comparison")
     # Pair CNN settings by trial so the ablation is visible without adding algorithms.
     pivot = table.pivot(index="trial", columns="method", values="accuracy")
-    if "CNN geometric" in pivot.columns and "CNN + morphology" in pivot.columns:
-        gain = (pivot["CNN + morphology"] - pivot["CNN geometric"]) * 100
-        gain.rename("morphology_gain_percentage_points").to_csv(folder / "cnn_ablation.csv")
+    if "CNN geometric" in pivot.columns and "CNN enhanced" in pivot.columns:
+        gain = (pivot["CNN enhanced"] - pivot["CNN geometric"]) * 100
+        gain.rename("enhanced_gain_percentage_points").to_csv(folder / "cnn_ablation.csv")
         fig, ax = plt.subplots(figsize=(6, 3.5))
         bars = ax.bar(["Trial " + str(i) for i in gain.index], gain.values, color="teal")
         ax.bar_label(bars, fmt="%+.2f")
         ax.axhline(0, color="black", linewidth=0.8)
-        ax.set(ylabel="Accuracy gain (percentage points)", title="Effect of morphological augmentation")
+        ax.set(ylabel="Accuracy gain (percentage points)", title="Effect of additional augmentation")
         ax.margins(y=0.25)
         fig.tight_layout()
-        save_figure(fig, folder, "cnn_morphology_ablation")
+        save_figure(fig, folder, "cnn_augmentation_ablation")
+        fig, axes = plt.subplots(2, 2, figsize=(11, 7))
+        for row, trial in enumerate([1, 2]):
+            for key, label in [("cnn_geometric", "Geometric"), ("cnn_enhanced", "Enhanced")]:
+                history = pd.read_csv(RESULTS / key / ("trial_" + str(trial)) / "history.csv")
+                axes[row, 0].plot(history["epoch"], history["val_loss"], label=label)
+                axes[row, 1].plot(history["epoch"], history["val_accuracy"] * 100, label=label)
+            axes[row, 0].set(title="Trial " + str(trial), ylabel="Validation loss", xlabel="Epoch")
+            axes[row, 1].set(title="Trial " + str(trial), ylabel="Validation accuracy (%)", xlabel="Epoch")
+            for ax in axes[row]:
+                ax.legend()
+                ax.grid(alpha=0.2)
+        fig.suptitle("Final two-setting CNN comparison (training-only validation)")
+        fig.tight_layout()
+        save_figure(fig, folder, "cnn_learning_curves")
     return summary

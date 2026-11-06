@@ -1,6 +1,6 @@
 {
-  "best_epoch": 24,
-  "best_validation_loss": 0.06395578816533089,
-  "selection_seconds": 22.466418500000145,
-  "final_fit_seconds": 22.183244299998478
+  "best_epoch": 46,
+  "best_validation_loss": 0.046914571151137355,
+  "selection_seconds": 43.614947800000664,
+  "final_fit_seconds": 44.44318170000042
 }

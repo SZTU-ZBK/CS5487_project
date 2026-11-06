@@ -1,0 +1,60 @@
+{
+  "training": {
+    "device": "cpu",
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "max_epochs": 50,
+    "patience": 10
+  },
+  "geometric": {
+    "rotation": 10,
+    "translation": 2,
+    "scale_min": 0.85,
+    "scale_max": 1.15,
+    "shear": 0
+  },
+  "enhanced": {
+    "1": {
+      "rotation": 10,
+      "translation": 2,
+      "scale_min": 0.85,
+      "scale_max": 1.15,
+      "shear": 0,
+      "elastic_probability": 0.6,
+      "elastic_strength": 1.0,
+      "elastic_sigma": 4
+    },
+    "2": {
+      "rotation": 10,
+      "translation": 2,
+      "scale_min": 0.85,
+      "scale_max": 1.15,
+      "shear": 0,
+      "elastic_probability": 0.6,
+      "elastic_strength": 0.7,
+      "elastic_sigma": 4,
+      "blur_probability": 0.15,
+      "blur_sigma_min": 0.2,
+      "blur_sigma_max": 0.7,
+      "photometric_probability": 0.2,
+      "photometric_range": 0.15
+    }
+  },
+  "selection": {
+    "split_seed": 42,
+    "validation_fraction": 0.2,
+    "criterion": "validation accuracy, then validation loss",
+    "test_sets_used_for_selection": false,
+    "trial_1": {
+      "validation_accuracy": 0.9875,
+      "validation_loss": 0.04364286657422781,
+      "selected_epoch": 44
+    },
+    "trial_2": {
+      "validation_accuracy": 0.9775,
+      "validation_loss": 0.08661228939890861,
+      "selected_epoch": 46
+    }
+  }
+}
