@@ -23,7 +23,8 @@
       "shear": 0,
       "elastic_probability": 0.6,
       "elastic_strength": 1.0,
-      "elastic_sigma": 4
+      "elastic_sigma": 4,
+      "morphology_probability": 0.08
     },
     "2": {
       "rotation": 10,
@@ -47,14 +48,23 @@
     "criterion": "validation accuracy, then validation loss",
     "test_sets_used_for_selection": false,
     "trial_1": {
-      "validation_accuracy": 0.9875,
-      "validation_loss": 0.04364286657422781,
-      "selected_epoch": 44
+      "validation_accuracy": 0.99,
+      "validation_loss": 0.03612341182306409,
+      "selected_epoch": 50
     },
     "trial_2": {
       "validation_accuracy": 0.9775,
       "validation_loss": 0.08661228939890861,
       "selected_epoch": 46
+    },
+    "parameter_search": {
+      "data_used": "each trial's own training-only validation split",
+      "criterion": "validation accuracy, then validation loss; incumbent retained unless improved",
+      "elastic_strength_units": "RMS displacement in pixels, not torchvision alpha",
+      "references": [
+        "https://www.microsoft.com/en-us/research/wp-content/uploads/2003/08/icdar03.pdf",
+        "https://docs.pytorch.org/vision/stable/generated/torchvision.transforms.v2.ElasticTransform.html"
+      ]
     }
   }
 }

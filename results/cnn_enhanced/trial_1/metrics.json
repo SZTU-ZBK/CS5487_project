@@ -2,8 +2,8 @@
   "method": "CNN enhanced",
   "trial": 1,
   "n_test": 2000,
-  "accuracy": 0.971,
-  "macro_f1": 0.9710068341750432,
-  "train_seconds": 128.28665759999785,
-  "predict_seconds": 0.21447509999779868
+  "accuracy": 0.972,
+  "macro_f1": 0.971966126779038,
+  "train_seconds": 133.04734049999752,
+  "predict_seconds": 0.2682368999994651
 }

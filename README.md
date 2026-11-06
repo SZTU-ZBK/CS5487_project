@@ -31,6 +31,8 @@ python run_notebooks.py
 python run_notebooks.py 02_cnn.ipynb
 ```
 
+CNN notebook 默认仅复用参数完全一致、且必要文件完整的已完成运行；需要从头重训时，将 `REUSE_COMPLETED_RUNS` 设为 `False`。新环境缺少本地模型文件时会正常重新训练。
+
 在新机器上重建环境：
 
 ```powershell
@@ -73,16 +75,16 @@ python -m ipykernel install --user --name cs5487-digits --display-name "Python (
 |---|---:|---:|---:|
 | 1-NN | 91.35% | 91.85% | 91.600% |
 | CNN：普通几何增强 | 97.05% | 96.05% | 96.550% |
-| CNN：精选增强 | 97.10% | 97.20% | 97.150% |
+| CNN：精选增强 | 97.20% | 97.20% | 97.200% |
 | Wavelet Scattering + 线性 SVM | 97.65% | 97.55% | 97.600% |
 
-本轮精选增强相对普通几何增强在两个 trial 中分别改变 +0.05、+1.15 个百分点，平均改变 +0.60 个百分点。
+本轮精选增强相对普通几何增强在两个 trial 中分别改变 +0.15、+1.15 个百分点，平均改变 +0.65 个百分点。
 
 候选筛选只使用各 trial 自己的训练内部验证集，测试前冻结最终方案。这份课程数据的测试结果在先前开发时已查看过，因此本轮属于迭代实验，不称作新的独立盲测。当前只运行一个随机种子，不据此声称统计显著或保证附加挑战成绩。
 
 最终入选的额外增强如下（概率表示每张训练图像被应用的概率）：
 
-- Trial 1：弹性形变：位移 RMS 1.0 像素，平滑 σ=4，概率 60%。
+- Trial 1：弹性形变：位移 RMS 1.0 像素，平滑 σ=4，概率 60%；约 1 像素腐蚀／膨胀，合计概率 8%。
 - Trial 2：弹性形变：位移 RMS 0.7 像素，平滑 σ=4，概率 60%；高斯模糊 σ=0.2–0.7，概率 15%；亮度／对比度 ±15%，概率 20%。
 
 报告／PPT 可优先使用：
@@ -99,6 +101,8 @@ python -m ipykernel install --user --name cs5487-digits --display-name "Python (
 已核验：三个 notebook 的全部代码单元执行成功；重新加载 8 个“方法设置 × trial”的模型，完整复现共 16,000 条保存的预测；49 组 PNG/PDF 图片成对存在；最终只存在两组 CNN 结果。检查记录见 `results/verification.json`。
 
 ## 实验设置
+
+本轮围绕既有方案逐项扰动参数，比较了位移 RMS 0.5／1.5 像素、平滑 σ=2.5／5.5、弹性应用概率 0.3／0.9，以及更轻的外观／笔画变化；这些是邻域搜索，不是所有参数的全组合网格。先筛选，再让入围候选接着训练到完整预算。现有方案始终作为候选，只有训练内部验证准确率提高，或同准确率下验证 loss 更低，才替换参数。当前强度采用像素 RMS，不能直接等同于 torchvision 的 `alpha`。探索记录不放入最终结果目录。
 
 - 严格使用老师给出的两个 trial，每次训练／测试各 2,000 张。
 - CNN 和 Scattering-SVM 在每个 trial 的训练集内部，用固定种子做分层 80/20 划分：1,600 张拟合、400 张验证。两个方法使用相同划分。
@@ -161,3 +165,4 @@ Scattering 的 `train_seconds` 是参数选择与 SVM 拟合时间，特征提�
 - OpenCV，形态学操作原理：https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html 。实际灰度腐蚀和膨胀由 SciPy 实现。
 - Simard, P. Y., Steinkraus, D. and Platt, J. C. (2003). *Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis*. https://www.microsoft.com/en-us/research/publication/best-practices-for-convolutional-neural-networks-applied-to-visual-document-analysis/
 - 实现依赖 PyTorch、scikit-learn、SciPy、NumPy、pandas、Matplotlib 和 Jupyter；报告中应列出所用库。
+- PyTorch，ElasticTransform 参数含义：https://docs.pytorch.org/vision/stable/generated/torchvision.transforms.v2.ElasticTransform.html

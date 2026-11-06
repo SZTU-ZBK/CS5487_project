@@ -12,7 +12,7 @@
     "cnn_enhanced trial 2: reloaded model reproduces all 2,000 predictions",
     "scattering trial 1: reloaded model reproduces all 2,000 predictions",
     "scattering trial 2: reloaded model reproduces all 2,000 predictions",
-    "Exactly two final CNN groups; selected policies match their frozen configurations",
+    "Exactly two final CNN groups; parameter choices use training-only validation",
     "49 PNG/PDF figure pairs verified"
   ],
   "model_trial_count": 8,

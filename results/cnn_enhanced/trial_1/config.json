@@ -14,7 +14,8 @@
     "shear": 0,
     "elastic_probability": 0.6,
     "elastic_strength": 1.0,
-    "elastic_sigma": 4
+    "elastic_sigma": 4,
+    "morphology_probability": 0.08
   },
   "trial": 1,
   "validation_fraction": 0.2,
